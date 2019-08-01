@@ -29,7 +29,6 @@ class App extends Component {
     this.setState({ posts });
     try {
       await axios.put(`${apiEndPoint}/${post.id}`, post);
-      throw new Error("");
     } catch (err) {
       alert("Something went wrong while updating");
       this.setState({ posts: originalPosts });
@@ -41,10 +40,14 @@ class App extends Component {
     const posts = this.state.posts.filter(p => p.id !== post.id);
     this.setState({ posts });
     try {
-      await axios.delete(apiEndPoint + "/" + post.id);
-      throw new Error("");
-    } catch (err) {
-      alert("Something went wrong while deleting the post");
+      await axios.delete(apiEndPoint + "/99e");
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        alert("Post already deleted");
+      else {
+        console.log("Logging the error", ex);
+        alert("An unexpected error occurred");
+      }
       this.setState({ posts: originalPosts });
     }
   };
