@@ -1,67 +1,54 @@
-import React, { Component } from "react";
-import axios from "axios";
-import "./App.css";
+import React, {Component} from 'react';
+import http from './services/httpService';
+import './App.css';
 
-axios.interceptors.response.use(null, error => {
-  const errorExpected =
-    error.response &&
-    error.response.status >= 400 &&
-    error.response.status < 500;
-
-  if (!errorExpected) {
-    console.log("Logging the error", error);
-    alert("An unexpected error occurred");
-  }
-  return Promise.reject(error);
-});
-
-const apiEndPoint = "https://jsonplaceholder.typicode.com/posts";
+const apiEndPoint = 'https://jsonplaceholder.typicode.com/posts';
 class App extends Component {
   state = {
-    posts: []
+    posts: [],
   };
 
-  async componentDidMount() {
-    const { data: posts } = await axios.get(apiEndPoint);
-    this.setState({ posts });
+  async componentDidMount () {
+    const {data: posts} = await http.get (apiEndPoint);
+    this.setState ({posts});
   }
 
   handleAdd = async () => {
-    const obj = { title: "a", body: "b" };
-    const { data: post } = await axios.post(apiEndPoint, obj);
+    const obj = {title: 'a', body: 'b'};
+    const {data: post} = await http.post (apiEndPoint, obj);
     const posts = [post, ...this.state.posts];
-    this.setState({ posts });
+    this.setState ({posts});
   };
 
   handleUpdate = async post => {
     const originalPosts = this.state.posts;
-    post.title = "Updated";
+    post.title = 'Updated';
     const posts = [...this.state.posts];
-    const index = posts.indexOf(post);
-    posts[index] = { ...post };
-    this.setState({ posts });
+    const index = posts.indexOf (post);
+    posts[index] = {...post};
+    this.setState ({posts});
     try {
-      await axios.put(`${apiEndPoint}/${post.id}`, post);
+      await http.put (`${apiEndPoint}/${post.id}`, post);
     } catch (err) {
-      alert("Something went wrong while updating");
-      this.setState({ posts: originalPosts });
+      alert ('Something went wrong while updating');
+      this.setState ({posts: originalPosts});
     }
   };
 
   handleDelete = async post => {
     const originalPosts = this.state.posts;
-    const posts = this.state.posts.filter(p => p.id !== post.id);
-    this.setState({ posts });
+    const posts = this.state.posts.filter (p => p.id !== post.id);
+    this.setState ({posts});
     try {
-      await axios.delete("s" + apiEndPoint + post.id);
+      await http.delete ('s' + apiEndPoint + post.id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
-        alert("Post already deleted");
-      this.setState({ posts: originalPosts });
+        alert ('Post already deleted');
+      this.setState ({posts: originalPosts});
     }
   };
 
-  render() {
+  render () {
     return (
       <React.Fragment>
         <button className="btn btn-primary" onClick={this.handleAdd}>
@@ -76,13 +63,13 @@ class App extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.state.posts.map(post => (
+            {this.state.posts.map (post => (
               <tr key={post.id}>
                 <td>{post.title}</td>
                 <td>
                   <button
                     className="btn btn-info btn-sm"
-                    onClick={() => this.handleUpdate(post)}
+                    onClick={() => this.handleUpdate (post)}
                   >
                     Update
                   </button>
@@ -90,7 +77,7 @@ class App extends Component {
                 <td>
                   <button
                     className="btn btn-danger btn-sm"
-                    onClick={() => this.handleDelete(post)}
+                    onClick={() => this.handleDelete (post)}
                   >
                     Delete
                   </button>
