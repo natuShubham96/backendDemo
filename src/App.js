@@ -1,21 +1,21 @@
 import React, {Component} from 'react';
 import http from './services/httpService';
+import config from './config.json';
 import './App.css';
 
-const apiEndPoint = 'https://jsonplaceholder.typicode.com/posts';
 class App extends Component {
   state = {
     posts: [],
   };
 
   async componentDidMount () {
-    const {data: posts} = await http.get (apiEndPoint);
+    const {data: posts} = await http.get (config.apiEndPoint);
     this.setState ({posts});
   }
 
   handleAdd = async () => {
     const obj = {title: 'a', body: 'b'};
-    const {data: post} = await http.post (apiEndPoint, obj);
+    const {data: post} = await http.post (config.apiEndPoint, obj);
     const posts = [post, ...this.state.posts];
     this.setState ({posts});
   };
@@ -28,7 +28,7 @@ class App extends Component {
     posts[index] = {...post};
     this.setState ({posts});
     try {
-      await http.put (`${apiEndPoint}/${post.id}`, post);
+      await http.put (`${config.apiEndPoint}/${post.id}`, post);
     } catch (err) {
       alert ('Something went wrong while updating');
       this.setState ({posts: originalPosts});
@@ -40,7 +40,7 @@ class App extends Component {
     const posts = this.state.posts.filter (p => p.id !== post.id);
     this.setState ({posts});
     try {
-      await http.delete ('s' + apiEndPoint + post.id);
+      await http.delete ('s' + config.apiEndPoint + post.id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         alert ('Post already deleted');
